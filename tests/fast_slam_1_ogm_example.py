@@ -17,9 +17,12 @@ from motion_model.motion_model import MotionErrorModel2D
 # Sensing Model Module
 from sensing_model.lidar_scan_generator import LidarConfigParams
 from sensing_model.lidar_scan_generator import LidarScanGenerator2D
-from sensing_model.likelihood_generator import ScanLikelihoodGenerator
 from sensing_model.inverse_model import InverseRangeSensorModelConfigParams
 from sensing_model.inverse_model import InverseRangeSensorModel
+
+# Scan Matching Module
+from scan_matcher.scan_matcher import ScanMatcherConfigParams
+from scan_matcher.scan_matcher import ScanMatcher
 
 # Grid Map Module
 from grid_map.grid_map_2d import GridMap2DConfigParams
@@ -42,8 +45,8 @@ if __name__ == '__main__':
   
   # Error Config
   err_conf = MotionErrorModel2dConfigParams(
-          std_rot_per_rot=0.1, std_rot_per_trans=0.5,
-          std_trans_per_trans=0.1, std_trans_per_rot=0.01)
+          std_rot_per_rot=0.05, std_rot_per_trans=0.05,
+          std_trans_per_trans=0.01, std_trans_per_rot=0.01)
   err_model = MotionErrorModel2D(conf=err_conf)
 
   # Grid Map Configuration
@@ -67,7 +70,7 @@ if __name__ == '__main__':
                                    min_angle=-math.pi/2.0, \
                                    max_angle=math.pi/2.0, \
                                    angle_res=math.pi/360.0, \
-                                   sigma=2.0)
+                                   sigma=0.40)
 
   # Inverse Sensor Model
   inv_lidar_conf = InverseRangeSensorModelConfigParams(\
@@ -82,10 +85,15 @@ if __name__ == '__main__':
   fake_scan_gen = LidarScanGenerator2D(lidar_config=lidar_config)
 
   # Scan Likelihood Generator Instantiation
-  scan_likeli_gen = ScanLikelihoodGenerator(map2d=grid2d_gt,
-                                            lidar_config=lidar_config)
-
-
+  scan_match_cfg = ScanMatcherConfigParams(
+                        zhit=0.8, \
+                        zshort=0.0,
+                        zmax=0.1,
+                        zmax_width=0.2,
+                        zrand=0.1,
+                        lambda_short=0.0)
+  scan_matcher = ScanMatcher(lidar_config=lidar_config, \
+                             scan_match_config=scan_match_cfg)
 
   grid_conf_ogm = GridMap2DConfigParams(
                             x_min=-50.0,y_min=-25.0, \
@@ -95,7 +103,7 @@ if __name__ == '__main__':
   fast_slam_ogm = FastSLAMOGM_Ver1(particle_num=particle_num, \
                                    init_pose=path[0], \
                                    err_model=err_model,\
-                                   likelihood_generator=scan_likeli_gen,\
+                                   likelihood_generator=scan_matcher,\
                                    grid_map_conf=grid_conf_ogm, \
                                    inv_sens_model=inv_lidar_model)
 
@@ -107,21 +115,29 @@ if __name__ == '__main__':
   grid2d_odom_disp.show_heatmap(ax10)
 
   last_true_pose = path[0]
+  cur_noised_pose = [last_true_pose]
+  last_noised_pose = [last_true_pose]
   for index, cur_true_pose in enumerate(path):
     print("Loop {0}".format(str(index)))
 
     if (index==0):
       continue
 
+    # Create Noised Odometry
+    cur_noised_pose = err_model.sample_motion(cur_odom=cur_true_pose, last_odom=last_true_pose, last_particle_poses=last_noised_pose)
+
     # Generate Artificial Scan
+    # This odometry has to be true pose.
     start_time = time.time()
     scans = fake_scan_gen.generate_scans(cur_true_pose, grid2d_gt)
+    last_true_pose = cur_true_pose
     fake_scan_time = time.time() - start_time
 
     # Generate Localized Pose
+    # This odometry has to be noised pose.
     start_time = time.time()
-    fast_slam_ogm.update(cur_odom=cur_true_pose, last_odom=last_true_pose, meas=scans)
-    last_true_pose = cur_true_pose
+    fast_slam_ogm.update(cur_odom=cur_noised_pose[0], last_odom=last_noised_pose[0], meas=scans)
+    last_noised_pose = cur_noised_pose
     slam_time = time.time() - start_time
 
     # Data Aquisition
@@ -131,7 +147,9 @@ if __name__ == '__main__':
     # Visualization.
     slam_map.show_heatmap(ax_scanmap)
     GridMap2DDrawer.draw_point(grid2d_pose, slam_pose.x, slam_pose.y, 0.2, 1.0)
+    GridMap2DDrawer.draw_point(grid2d_pose, cur_noised_pose[0].x, cur_noised_pose[0].y, 0.2, 1.0)
     grid2d_pose.show_heatmap(ax_est_pose)
+    print(slam_pose.theta * 180.0 / math.pi)
 
     if (index % 10 == 0):
       plt.pause(0.1)

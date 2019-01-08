@@ -74,7 +74,7 @@ class LidarScanGenerator2D():
           break
 
         # If the considered cell is occupied, set range and break.
-        if (map2d.get_val_via_map_coord(x_map=x_map, y_map=y_map) > 0.7):
+        if (map2d.get_val_via_map_coord(x_map=x_map, y_map=y_map) > 0.3):
           scans.ranges[i] = \
             math.sqrt((x_map - x_ray_src_map)**2 + (y_map - y_ray_src_map)**2) * conf.reso
           break

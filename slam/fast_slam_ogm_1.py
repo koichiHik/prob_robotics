@@ -2,7 +2,7 @@
 import copy
 
 # Slam Interface
-from slam.abstract_slam import AbstractSLAM
+from interface.interface import ISlam
 
 # Sampler Module
 from stats.sampler import LowVarianceSampler
@@ -35,7 +35,7 @@ class ParticleSLAM():
   def get_map(self):
     return self._map
 
-class FastSLAMOGM_Ver1(AbstractSLAM):
+class FastSLAMOGM_Ver1(ISlam):
 
   def __init__(self, *,
                particle_num=10,
@@ -73,16 +73,13 @@ class FastSLAMOGM_Ver1(AbstractSLAM):
     # 4. Resample
     self.__resample()
 
-  def get_current_pose(self, num=1):
+  def get_current_pose(self, all_pose=False):
 
     length = len(self._particles[0].get_pose_list())
-    if (num==1):
+    if (not all_pose):
       return self._particles[0].get_pose_list()[length - 1]
     else:
-      pose_list = []
-      for idx in range(min(self._particle_num, num)):
-        pose_list.append(self._particles[idx].get_pose_list()[length - 1])
-      return pose_list
+      return [p.get_pose_list()[length - 1] for p in self._particles]
 
   def get_current_map(self, num=1):
 
@@ -114,8 +111,10 @@ class FastSLAMOGM_Ver1(AbstractSLAM):
 
     length = len(self._particles[0].get_pose_list())
     for particle in self._particles:
+      pose = particle.get_pose_list()[length-1]
+      map = particle.get_map()
       weight = self._likelihood_generator.calc_likelihood( \
-                          pose=particle.get_pose_list()[length-1], scans=scans)
+                          pose=pose, scans=scans, map2d=map)
       particle.set_weight(weight)
 
   def __update_occupancy_grid(self, scans):
@@ -139,6 +138,9 @@ class FastSLAMOGM_Ver1(AbstractSLAM):
 
     # Upon Finishing Resample, Sort.
     self._particles.sort(key=lambda x:x.get_weight(),reverse=True) 
+
+    s_weight_list = [particle.get_weight() for particle in self._particles]
+    print(s_weight_list)
 
     # Resetting Weight for Next Iteration.
     M = len(weight_list)

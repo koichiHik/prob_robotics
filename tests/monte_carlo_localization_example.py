@@ -17,9 +17,12 @@ from motion_model.motion_model import MotionErrorModel2D
 # Sensing Model Module
 from sensing_model.lidar_scan_generator import LidarConfigParams
 from sensing_model.lidar_scan_generator import LidarScanGenerator2D
-from sensing_model.likelihood_generator import ScanLikelihoodGenerator
 from sensing_model.inverse_model import InverseRangeSensorModelConfigParams
 from sensing_model.inverse_model import InverseRangeSensorModel
+
+# Scan Matcher
+from scan_matcher.scan_matcher import ScanMatcherConfigParams
+from scan_matcher.scan_matcher import ScanMatcher
 
 # Grid Map Module
 from grid_map.grid_map_2d import GridMap2DConfigParams
@@ -38,7 +41,7 @@ if __name__ == "__main__":
   
   print(__file__ + " Started!")
 
-  particle_num=50
+  particle_num=10
   err_conf = MotionErrorModel2dConfigParams(
                   std_rot_per_rot=0.1, std_rot_per_trans=0.5, \
                   std_trans_per_trans=0.1, std_trans_per_rot=0.01)
@@ -80,15 +83,23 @@ if __name__ == "__main__":
   fake_scan_gen = LidarScanGenerator2D(lidar_config=lidar_config)
 
   # Scan Likelihood Generator Instantiation
-  scan_likeli_gen = ScanLikelihoodGenerator(map2d=grid2d_gt,
-                                            lidar_config=lidar_config)
+  scan_match_cfg = ScanMatcherConfigParams(
+                          zhit=0.6, \
+                          zshort=0.0,
+                          zmax=0.3,
+                          zmax_width=0.2,
+                          zrand=0.1,
+                          lambda_short=0.0)
+  scan_matcher = ScanMatcher(\
+                                lidar_config=lidar_config,
+                                scan_match_config=scan_match_cfg)
 
   # Localizer Instantiation
   mcl_localizer = MonteCarloLocalizer(map2d=grid2d_gt, \
                                       particle_num=particle_num, \
                                       init_pose=path[0], \
                                       err_model=err_model, 
-                                      likelihood_generator=scan_likeli_gen)
+                                      scan_matcher=scan_matcher)
 
   fig_scanmap, ax_scanmap = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
   fig_est_pose, ax_est_pose = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
@@ -98,21 +109,29 @@ if __name__ == "__main__":
   grid2d_odom_disp.show_heatmap(ax10)
 
   last_true_pose = path[0]
+  cur_noised_pose = [last_true_pose]
+  last_noised_pose = [last_true_pose]  
   for index, cur_true_pose in enumerate(path):
     print("Loop {0}".format(str(index)))
 
     if (index==0):
       continue
 
+    # Create Noised Odometry
+    cur_noised_pose = err_model.sample_motion(cur_odom=cur_true_pose, last_odom=last_true_pose, last_particle_poses=last_noised_pose)
+
     # Generate Artificial Scan
+    # This odometry has to be true pose.
     start_time = time.time()
     scans = fake_scan_gen.generate_scans(cur_true_pose, grid2d_gt)
+    last_true_pose = cur_true_pose
     fake_scan_time = time.time() - start_time
 
     # Generate Localized Pose
+    # This odometry has to be noised pose.
     start_time = time.time()
-    mcl_pose = mcl_localizer.localize(cur_odom=cur_true_pose, last_odom=last_true_pose, scans=scans)
-    last_true_pose = cur_true_pose
+    mcl_pose = mcl_localizer.localize(cur_odom=cur_noised_pose[0], last_odom=last_noised_pose[0], scans=scans)
+    last_noised_pose = cur_noised_pose
     mcl_time = time.time() - start_time
 
     # Register Scans

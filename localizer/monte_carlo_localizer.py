@@ -12,21 +12,26 @@ from stats.sampler import LowVarianceSampler
 from motion_model.motion_model import MotionErrorModel2D
 
 # Sensing Model Module
-from sensing_model.likelihood_generator import ScanLikelihoodGenerator
+from scan_matcher.scan_matcher import ScanMatcherConfigParams
+from scan_matcher.scan_matcher import ScanMatcher
 
-class MonteCarloLocalizer():
+# Interface Module
+from interface.interface import ILocalizer
+
+class MonteCarloLocalizer(ILocalizer):
 
   def __init__(self, *, 
                 map2d, particle_num=10, \
                 init_pose, \
                 sampler=LowVarianceSampler(), \
                 err_model, \
-                likelihood_generator):
+                scan_matcher):
     self.__particles = [ParticleMCL() for i in range(particle_num)]
     self.__map2d = map2d
     self.__sampler = sampler
     self.__err_model = err_model
-    self.__likelihood_generator = likelihood_generator
+    self.__scan_matcher = scan_matcher
+    self.__heaviest_particle = ParticleMCL()
 
     M = len(self.__particles)
     for particle in self.__particles:
@@ -37,13 +42,18 @@ class MonteCarloLocalizer():
 
     cur_pose_list = self.__sample_motion(cur_odom, last_odom)
 
-    #print(last_odom)
-
     self.__weighting_by_measurement(scans, cur_pose_list)
 
-    heaviest_particle = self.__resapmle()
+    self.__heaviest_particle = self.__resapmle()
 
-    return copy.deepcopy(heaviest_particle.get_pose())
+    return self.__heaviest_particle.get_pose()
+
+  def get_current_pose(self, all_pose=False):
+
+    if (not all_pose):
+      return self.__heaviest_particle.get_pose()
+    else:
+      return [p.get_pose() for p in self.__particles]
 
   def __sample_motion(self, cur_odom, last_odom):
 
@@ -60,10 +70,8 @@ class MonteCarloLocalizer():
 
     for index, particle in enumerate(self.__particles):
       particle.update_pose(cur_pose_list[index])
-      #print(particle.get_pose())
-      weight = self.__likelihood_generator.calc_likelihood( \
-                          pose=particle.get_pose(), scans=scans)
-      #print(weight)
+      weight = self.__scan_matcher.calc_likelihood( \
+                          pose=particle.get_pose(), scans=scans, map2d=self.__map2d)
       particle.update_weight(weight)
 
   def __resapmle(self):
@@ -78,8 +86,9 @@ class MonteCarloLocalizer():
       self.__particles[index] = copy.deepcopy(self.__particles[par_idx])
 
     heaviest_particle = copy.copy(max(self.__particles, key=lambda x: x.get_weight()))
+
     M = len(weight_list)
     for index, particle in enumerate(self.__particles):
       particle.update_weight(float(1/M))
 
-    return heaviest_particle
+    return copy.copy(heaviest_particle)

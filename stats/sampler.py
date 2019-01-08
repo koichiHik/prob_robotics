@@ -16,6 +16,8 @@ class LowVarianceSampler(AbstractSampler):
   @staticmethod
   def __normalize_weights(weights_list):
     total = sum(weights_list)
+    print("total : " + str(total))
+    print(weights_list)
     return weights_list / total
 
   @staticmethod

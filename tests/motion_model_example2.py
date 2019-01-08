@@ -27,10 +27,10 @@ from tests.test_data import create_sample_room
 if __name__ == "__main__":
 
   # Motion Model Configuration
-  particle_num=10
-  err_conf = MotionErrorModel2dConfigParams(std_rot_per_rot=0.1,\
-                                            std_rot_per_trans=0.50,\
-                                            std_trans_per_trans=0.1,\
+  particle_num=100
+  err_conf = MotionErrorModel2dConfigParams(std_rot_per_rot=0.01,\
+                                            std_rot_per_trans=0.02,\
+                                            std_trans_per_trans=0.05,\
                                             std_trans_per_rot=0.01)
   err_model = MotionErrorModel2D(conf=err_conf)
 

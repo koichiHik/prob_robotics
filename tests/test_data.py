@@ -21,15 +21,30 @@ def create_sample_room(map2d):
   GridMap2DDrawer.fill_area(map2d, conf.x_min, conf.y_min, conf.x_max, -20, 1)
   GridMap2DDrawer.fill_area(map2d, conf.x_min, 20, conf.x_max, conf.y_max, 1)
 
-def create_sample_robot_path(map2d):
+def create_sample_robot_path(map2d, trans_reso=1.0, angle_reso=math.pi/2.0):
 
   path = []
-  for i in range(35):
-    path.append(Pose2D(-49+i, -17.5, 0))
+  #for i in range(35):
+  #  path.append(Pose2D(-49+i*trans_reso, -17.5, 0))
+  for i in range(35 * 4):
+    path.append(Pose2D(-49+i*0.25, -17.5, 0))
+
+  path.append(Pose2D(-15, -17.5, 0.0))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.1))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.2))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.3))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.4))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.5))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.6))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.7))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.8))
+  path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.9))
   path.append(Pose2D(-15, -17.5, math.pi / 2.0))
 
-  for i in range(35):
-    path.append(Pose2D(-15, -17.5+i, math.pi / 2.0))
+  #for i in range(35):
+  #  path.append(Pose2D(-15, -17.5+i, math.pi / 2.0))
+  for i in range(35 * 4):
+    path.append(Pose2D(-15, -17.5+i*0.25, math.pi / 2.0))
   path.append(Pose2D(-15, 17.5, math.pi))
 
   for i in range(23):

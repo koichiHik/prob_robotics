@@ -6,6 +6,9 @@ sys.path.append(os.pardir)
 import numpy as np
 import math
 
+# Interface Module
+from interface.interface import IScanMatcher
+
 # Sensing Model Module
 from sensing_model.lidar_scan_generator import LidarScanGenerator2D
 from sensing_model.lidar_scan_generator import LidarConfigParams
@@ -13,15 +16,25 @@ from sensing_model.lidar_scan_generator import LidarConfigParams
 # Common Module
 from common.container import Scans
 
-class ScanLikelihoodGenerator():
+class ScanMatcherConfigParams():
+  
+  def __init__(self, *, zhit, zshort, zmax, zmax_width, zrand, lambda_short):
+    self._zhit = zhit
+    self._zshort = zshort
+    self._zmax = zmax
+    self._zmax_width = zmax_width
+    self._zrand = zrand
+    self._lambda_short = lambda_short
 
-  def __init__(self, *, map2d, lidar_config):
+class ScanMatcher(IScanMatcher):
 
-    self.__map2d = map2d
+  def __init__(self, *, lidar_config, scan_match_config):
+
     self.__range_max = lidar_config.range_max
     self.__sigma = lidar_config.sigma
     self.__lidar_scan_gen = \
         LidarScanGenerator2D(lidar_config=lidar_config)
+    self.__scan_match_cfg = scan_match_config
 
     bin = 0.001
     normalization = 0
@@ -31,14 +44,23 @@ class ScanLikelihoodGenerator():
       * math.exp(-(self.__range_max/2.0 - bin*i)**2 / (2*self.__sigma**2)))
     print("Integral Result @ Likelihood Generator : {0}".format(str(normalization)))
 
-  def calc_likelihood(self, *, pose, scans):
+  def update_pose_via_scan_match(self, *, cur_pose, scans, map2d):
+    pass
 
-    scans_wrt_pose = self.__lidar_scan_gen.generate_scans(pose, self.__map2d)
-    prob_array = np.exp(-(scans.ranges - scans_wrt_pose.ranges)**2 / (2*self.__sigma**2))
+  def calc_likelihood(self, *, pose, scans, map2d):
+
+    scans_wrt_pose = self.__lidar_scan_gen.generate_scans(pose, map2d)
+    prob_array_hit = np.exp(-(scans.ranges - scans_wrt_pose.ranges)**2 \
+                        / (2*self.__sigma**2)) * self.__scan_match_cfg._zhit
+    #prob_array_short 
+    prob_array_max = (self.__range_max - self.__scan_match_cfg._zmax_width < scans.ranges) \
+                        * self.__scan_match_cfg._zmax
+    prob_array_rand = np.zeros(prob_array_hit.shape[0]) + 1 / self.__range_max \
+                        * self.__scan_match_cfg._zrand
 
     p = 1
-    for i in range(prob_array.shape[0]):
-      p = p * prob_array[i]
+    for i in range(prob_array_hit.shape[0]):
+      p = p * (1.2 * prob_array_hit[i] + prob_array_max[i] + prob_array_rand[i])
 
     return p
 
@@ -73,9 +95,15 @@ if __name__ == "__main__":
 
   scans = fakeScanGen.generate_scans(true_pose, map2d_src)
 
-  likelihoodGen = ScanLikelihoodGenerator(map2d=map2d_src, \
-                                  lidar_config=lidar_config)
+  scan_match_cfg = ScanMatcherConfigParams(
+                          zhit=0.8, \
+                          zshort=0.0,
+                          zmax=0.1,
+                          zmax_width=0.2,
+                          zrand=0.1,
+                          lambda_short=0.0)
+  likelihoodGen = ScanMatcher(lidar_config=lidar_config, scan_match_config=scan_match_cfg)
 
-  prob = likelihoodGen.calc_likelihood(pose=diff_pose, scans=scans)
+  prob = likelihoodGen.calc_likelihood(pose=diff_pose, scans=scans, map2d=map2d_src)
 
   print(prob)

@@ -28,12 +28,12 @@ if __name__ == "__main__":
 
     # Error Model
     err_conf = MotionErrorModel2dConfigParams(std_rot_per_rot=0.01,
-                                              std_rot_per_trans=0.01,
-                                              std_trans_per_trans=0.01,
+                                              std_rot_per_trans=0.02,
+                                              std_trans_per_trans=0.05,
                                               std_trans_per_rot=0.01)
     err_model = MotionErrorModel2D(conf=err_conf)
 
-    particle_num = 100  
+    particle_num = 5  
     plt.scatter(x=path[0].x,y=path[0].y,s=2)
 
     cur_particle_poses = \
