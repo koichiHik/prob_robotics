@@ -21,6 +21,12 @@ def create_sample_room(map2d):
   GridMap2DDrawer.fill_area(map2d, conf.x_min, conf.y_min, conf.x_max, -20, 1)
   GridMap2DDrawer.fill_area(map2d, conf.x_min, 20, conf.x_max, conf.y_max, 1)
 
+def create_sample_1d_path():
+
+  path = [0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0]
+
+  return path
+
 def create_sample_robot_path(map2d, trans_reso=1.0, angle_reso=math.pi/2.0):
 
   path = []

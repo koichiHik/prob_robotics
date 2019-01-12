@@ -10,8 +10,8 @@ import math
 from interface.interface import IScanMatcher
 
 # Sensing Model Module
-from sensing_model.lidar_scan_generator import LidarScanGenerator2D
-from sensing_model.lidar_scan_generator import LidarConfigParams
+from sensing_model.virtual_lidar2d import VirtualLidar2D
+from sensing_model.virtual_lidar2d import VirtualLidar2DConfigParams
 
 # Common Module
 from common.container import Scans
@@ -33,7 +33,7 @@ class ScanMatcher(IScanMatcher):
     self.__range_max = lidar_config.range_max
     self.__sigma = lidar_config.sigma
     self.__lidar_scan_gen = \
-        LidarScanGenerator2D(lidar_config=lidar_config)
+        VirtualLidar2D(lidar_config=lidar_config)
     self.__scan_match_cfg = scan_match_config
 
     bin = 0.001
@@ -83,12 +83,12 @@ if __name__ == "__main__":
       map2d_src.update_val_via_global_coord(x=10.0,y=y_coor,value=1.0)
 
   # Lidar Property
-  lidar_config = LidarConfigParams(range_max=10.0, \
+  lidar_config = VirtualLidar2DConfigParams(range_max=10.0, \
                                    min_angle=-math.pi/2.0, \
                                    max_angle=math.pi/2.0, \
                                    angle_res=math.pi/360.0, \
                                    sigma=2.0)
-  fakeScanGen = LidarScanGenerator2D(lidar_config=lidar_config)
+  fakeScanGen = VirtualLidar2D(lidar_config=lidar_config)
 
   true_pose = Pose2D(x=5.0,y=0.0,theta=45.0/180.0*math.pi)
   diff_pose = Pose2D(x=4.3,y=0.0,theta=42.0/180.0*math.pi)

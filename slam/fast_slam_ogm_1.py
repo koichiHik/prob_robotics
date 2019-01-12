@@ -51,10 +51,10 @@ class FastSLAMOGM_Ver1(ISlam):
     self._sampler = sampler
     self._err_model = err_model
     self._likelihood_generator = likelihood_generator
+    self._inv_sens_model = inv_sens_model
 
     # Particle Vector Generation
-    map_elem = OccupancyGridMap2D(conf=grid_map_conf, \
-                        inv_sens_model=inv_sens_model)
+    map_elem = OccupancyGridMap2D(conf=grid_map_conf)
     particle = ParticleSLAM(pose=self._init_pose, weight=float(1/self._particle_num), map=map_elem)
 
     self._particles = [copy.deepcopy(particle) for i in range(self._particle_num)]
@@ -122,7 +122,7 @@ class FastSLAMOGM_Ver1(ISlam):
     length = len(self._particles[0].get_pose_list())
     for particle in self._particles:
       pose = particle.get_pose_list()[length-1]
-      particle.get_map().register_scan(pose=pose, scans=scans)
+      self._inv_sens_model.register_scan(pose=pose, scans=scans, map2d=particle.get_map())
 
   def __resample(self):
 

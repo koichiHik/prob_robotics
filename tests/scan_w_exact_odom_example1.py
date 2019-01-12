@@ -11,8 +11,10 @@ import matplotlib.pyplot as plt
 from common.container import Pose2D
 
 # Sensing Model Module
-from sensing_model.lidar_scan_generator import LidarConfigParams
-from sensing_model.lidar_scan_generator import LidarScanGenerator2D
+from sensing_model.inverse_model import InverseRangeSensorModelConfigParams
+from sensing_model.inverse_model import InverseRangeSensorModel
+from sensing_model.virtual_lidar2d import VirtualLidar2DConfigParams
+from sensing_model.virtual_lidar2d import VirtualLidar2D
 
 # Grid Map Module
 from grid_map.grid_map_2d import GridMap2DConfigParams
@@ -48,13 +50,23 @@ if __name__ == "__main__":
   create_sample_room(grid2d_pose)
   path = create_sample_robot_path(grid2d_odom_disp)
 
+  # Inverse Sensor Model
+  inv_conf = InverseRangeSensorModelConfigParams(\
+                                  range_max=10.0,
+                                  l0=0.0,
+                                  locc=0.0,
+                                  lfree=0.0,
+                                  alpha=0.0,
+                                  beta=0.0)
+  inv_sens_model = InverseRangeSensorModel(conf=inv_conf)
+
   # Lidar Property
-  lidar_config = LidarConfigParams(range_max=10.0, \
+  lidar_config = VirtualLidar2DConfigParams(range_max=10.0, \
                                    min_angle=-math.pi/2.0, \
                                    max_angle=math.pi/2.0, \
                                    angle_res=math.pi/360.0, \
                                    sigma=2.0)  
-  fakeScanGen = LidarScanGenerator2D(lidar_config=lidar_config)
+  v_lidar2d = VirtualLidar2D(lidar_config=lidar_config)
 
   fig_scanmap, ax_scanmap = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
   fig, (ax00, ax10, ax20) = plt.subplots(nrows=3,ncols=1,figsize=(4, 6),dpi=100)
@@ -67,12 +79,13 @@ if __name__ == "__main__":
 
     # Generate Artificial Scan
     start_time = time.time()
-    scans = fakeScanGen.generate_scans(pose, grid2d_gt)
+    scans = v_lidar2d.generate_scans(pose, grid2d_gt)
     fake_scan_time = time.time() - start_time
 
     # Register Scans
     start_time = time.time()
-    grid2d_scanmap.register_scan(pose=pose, scans=scans)
+    #grid2d_scanmap.register_scan(pose=pose, scans=scans)
+    inv_sens_model.register_fixed_scan(pose=pose, scans=scans, map2d=grid2d_scanmap)
     scan_registration_time = time.time() - start_time
 
     # Visualization.

@@ -15,8 +15,8 @@ from motion_model.motion_model import MotionErrorModel2dConfigParams
 from motion_model.motion_model import MotionErrorModel2D
 
 # Sensing Model Module
-from sensing_model.lidar_scan_generator import LidarConfigParams
-from sensing_model.lidar_scan_generator import LidarScanGenerator2D
+from sensing_model.virtual_lidar2d import VirtualLidar2DConfigParams
+from sensing_model.virtual_lidar2d import VirtualLidar2D
 from sensing_model.inverse_model import InverseRangeSensorModelConfigParams
 from sensing_model.inverse_model import InverseRangeSensorModel
 
@@ -27,7 +27,6 @@ from scan_matcher.scan_matcher import ScanMatcher
 # Grid Map Module
 from grid_map.grid_map_2d import GridMap2DConfigParams
 from grid_map.grid_map_2d import GridMap2D
-from grid_map.grid_map_2d import OccupancyGridMap2D
 from grid_map.grid_map_2d import GridMap2DDrawer
 
 # SLAM Module
@@ -66,7 +65,7 @@ if __name__ == '__main__':
   path = create_sample_robot_path(grid2d_odom_disp)
 
   # Lidar Property
-  lidar_config = LidarConfigParams(range_max=10.0, \
+  lidar_config = VirtualLidar2DConfigParams(range_max=10.0, \
                                    min_angle=-math.pi/2.0, \
                                    max_angle=math.pi/2.0, \
                                    angle_res=math.pi/360.0, \
@@ -82,7 +81,7 @@ if __name__ == '__main__':
   # Grid Map Configuration
 
   # Scan Generator Instantiation
-  fake_scan_gen = LidarScanGenerator2D(lidar_config=lidar_config)
+  v_lidar2d = VirtualLidar2D(lidar_config=lidar_config)
 
   # Scan Likelihood Generator Instantiation
   scan_match_cfg = ScanMatcherConfigParams(
@@ -129,7 +128,7 @@ if __name__ == '__main__':
     # Generate Artificial Scan
     # This odometry has to be true pose.
     start_time = time.time()
-    scans = fake_scan_gen.generate_scans(cur_true_pose, grid2d_gt)
+    scans = v_lidar2d.generate_scans(cur_true_pose, grid2d_gt)
     last_true_pose = cur_true_pose
     fake_scan_time = time.time() - start_time
 

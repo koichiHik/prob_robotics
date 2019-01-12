@@ -9,15 +9,21 @@ import math
 from common.container import Scans
 from common.container import Pose2D
 from common.math_func import my_round
+from common.container import Coord2D
 from common.container import MapIntCoord2D
 
+# Ray Tracing Module
 from ray_tracing.ray_tracing_2d import RayTracing2D
 
 # Grid Map 2D Module
 from grid_map.grid_map_2d import GridMap2D
 from grid_map.grid_map_2d import GridMap2DConfigParams
 
-class LidarConfigParams:
+# Sensor Model Module
+from sensing_model.inverse_model import InverseRangeSensorModelConfigParams
+from sensing_model.inverse_model import InverseRangeSensorModel
+
+class VirtualLidar2DConfigParams:
 
   def __init__(self, *, range_max, min_angle, max_angle, angle_res, sigma=0.0):
     self.range_max = range_max
@@ -27,7 +33,7 @@ class LidarConfigParams:
     self.sigma = sigma
     self.ray_cnt = int(my_round((max_angle - min_angle) / angle_res) + 1)   
 
-class LidarScanGenerator2D():
+class VirtualLidar2D():
 
   def __init__(self, *, lidar_config):
     self._lidar_config = lidar_config
@@ -104,19 +110,29 @@ if __name__ == "__main__":
     if (map2d_src.is_valid_global_coord(10.0, y_coor)):
       map2d_src.update_val_via_global_coord(x=10.0,y=y_coor,value=1.0)
 
+  range_max = 10.0
+  # Inverse Sensor Model
+  inv_lidar_conf = InverseRangeSensorModelConfigParams(\
+                        range_max=range_max,
+                        l0 = 0.5, locc = 1.0, lfree = 0.0, \
+                        alpha = 0.4, beta = 0.0)
+  inv_lidar_model= InverseRangeSensorModel(conf=inv_lidar_conf)
+
   # Lidar Property
-  lidar_config = LidarConfigParams(range_max=10.0, \
+  lidar_config = VirtualLidar2DConfigParams(range_max=range_max, \
                                    min_angle=-math.pi/2.0, \
                                    max_angle=math.pi/2.0, \
                                    angle_res=math.pi/360.0, \
                                    sigma=2.0)
-  fakeScanGen = LidarScanGenerator2D(lidar_config=lidar_config)
+  v_lidar = VirtualLidar2D(lidar_config=lidar_config)
 
   pose = Pose2D(x=5.0,y=0.0,theta=45.0/180.0*math.pi)
-  scans = fakeScanGen.generate_scans(pose, map2d_src)
+  scans = v_lidar.generate_scans(pose, map2d_src)
 
   fig, ax = plt.subplots(1,1)
 
-  map2d_dst.register_scan(pose=pose, scans=scans)
+  #v_lidar.register_fixed_scan(pose=pose, scans=scans, map2d=map2d_dst)
+  #map2d_dst.register_scan(pose=pose, scans=scans)
+  inv_lidar_model.register_fixed_scan(pose=pose, scans=scans, map2d=map2d_dst)
   map2d_dst.show_heatmap(ax)
   plt.show()
