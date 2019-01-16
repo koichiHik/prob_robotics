@@ -30,8 +30,8 @@ class MotionErrorModel2D(IMotionModel):
 
   def sample_motion(self, *, cur_odom, last_odom, last_particle_poses):
 
-    nor_cur_odom = cur_odom.numpy_vec()
-    nor_last_odom = last_odom.numpy_vec()
+    nor_cur_odom = cur_odom.numpy_array()
+    nor_last_odom = last_odom.numpy_array()
     nor_cur_odom[2] = self.__normalize_angle_between_npi_to_ppi(nor_cur_odom[2])
     nor_last_odom[2] = self.__normalize_angle_between_npi_to_ppi(nor_last_odom[2])
 
@@ -86,7 +86,7 @@ class MotionErrorModel2D(IMotionModel):
 
     np_poses = np.zeros((3, len(list_poses)))
     for index, pose in enumerate(list_poses):
-      np_poses[:,index] = pose.numpy_vec()
+      np_poses[:,index] = pose.numpy_array()
     return np_poses
 
   def __generate_true_odom_diff_array(self, rot1, trans, rot2, last_particle_poses, particle_num):

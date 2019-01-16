@@ -1,6 +1,10 @@
 import math
+import numpy as np
 
 from common.container import Pose2D
+from common.container import Coord2D
+from common.container import Control
+from common.math_func import normalize_angle_pi_2_pi
 
 from grid_map.grid_map_2d import GridMap2D
 from grid_map.grid_map_2d import GridMap2DDrawer
@@ -27,11 +31,50 @@ def create_sample_1d_path():
 
   return path
 
+def create_robocup_field(map2d):
+
+  poles = [Coord2D(x=2.2, y=1.45),\
+           Coord2D(x=0, y=1.45), \
+           Coord2D(x=-2.2, y=1.45), \
+           Coord2D(x=-2.2, y=-1.45), \
+           Coord2D(x=0, y=-1.45), \
+           Coord2D(x=2.2, y=-1.45)]
+
+  for pole in poles:
+    GridMap2DDrawer.draw_point(map2d, pole.x, pole.y, 0.10, 1.0)
+
+  return poles
+
+def create_robocup_ellipse_path(dT):
+
+  a = 1.5
+  b = 0.9
+  omg = 2 * math.pi / 60.0
+  start = -3.0 / 4.0 * math.pi
+  end = 3.0 / 4.0 * math.pi
+
+  path = []
+  controls = []
+  for angle in np.arange(start, end, omg * dT):
+    x = a * math.cos(angle)
+    y = b * math.sin(angle)
+    dx_dt = -a * math.sin(angle) * omg
+    dy_dt = b * math.cos(angle) * omg
+    v = math.sqrt(dx_dt**2 + dy_dt**2)
+    
+    theta = normalize_angle_pi_2_pi(math.atan2(dy_dt, dx_dt))
+    path.append(Pose2D(x=x, y=y, theta=theta))
+    controls.append(Control(v=v, omg=omg))
+  
+  return path, controls
+
+def draw_path(path, map2d):
+  for pose in path:
+    GridMap2DDrawer.draw_point(map2d, pose.x, pose.y, 0.04, 1.0)
+
 def create_sample_robot_path(map2d, trans_reso=1.0, angle_reso=math.pi/2.0):
 
   path = []
-  #for i in range(35):
-  #  path.append(Pose2D(-49+i*trans_reso, -17.5, 0))
   for i in range(35 * 4):
     path.append(Pose2D(-49+i*0.25, -17.5, 0))
 

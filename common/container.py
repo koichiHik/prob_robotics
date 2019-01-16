@@ -15,8 +15,17 @@ class Pose2D():
           + str(self.y) + ", theta=" \
           + str(self.theta) + ")"
 
-  def numpy_vec(self):
-    return np.array([self.x, self.y, self.theta]).T
+  def numpy_array(self):
+    return np.array([self.x, self.y, self.theta])
+
+class Control():
+
+  def __init__(self, *, v=0.0, omg=0.0):
+    self.v = v
+    self.omg = omg
+
+  def numpy_array(self):
+    return np.array([self.v, self.omg])
 
 class MapIntCoord2D():
 
@@ -48,6 +57,16 @@ class Scans():
     self.angle_res = angle_res
     self.ray_cnt = my_round((max_angle - min_angle) / angle_res) + 1
     self.ranges = np.zeros(self.ray_cnt)
+
+class LandmarkMeas():
+
+  def __init__(self, *, r, phi, feat=1.0):
+    self.r = r
+    self.phi = phi
+    self.feat = feat
+
+  def numpy_array(self):
+    return np.array([self.r, self.phi, self.feat])
 
 class ParticleMCL():
 
