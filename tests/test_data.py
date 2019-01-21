@@ -75,10 +75,11 @@ def draw_path(path, map2d):
 def create_sample_robot_path(map2d, trans_reso=1.0, angle_reso=math.pi/2.0):
 
   path = []
-  for i in range(35 * 4):
+  
+
+  for i in range(34 * 4):
     path.append(Pose2D(-49+i*0.25, -17.5, 0))
 
-  path.append(Pose2D(-15, -17.5, 0.0))
   path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.1))
   path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.2))
   path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.3))
@@ -90,46 +91,134 @@ def create_sample_robot_path(map2d, trans_reso=1.0, angle_reso=math.pi/2.0):
   path.append(Pose2D(-15, -17.5, math.pi / 2.0 * 0.9))
   path.append(Pose2D(-15, -17.5, math.pi / 2.0))
 
-  #for i in range(35):
-  #  path.append(Pose2D(-15, -17.5+i, math.pi / 2.0))
   for i in range(35 * 4):
     path.append(Pose2D(-15, -17.5+i*0.25, math.pi / 2.0))
-  path.append(Pose2D(-15, 17.5, math.pi))
 
-  for i in range(23):
-    path.append(Pose2D(-15-i, 17.5, math.pi))
-  path.append(Pose2D(-37, 17.5, math.pi * 3.0 / 2.0))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.1))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.2))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.3))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.4))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.5))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.6))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.7))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.8))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.9))
+  path.append(Pose2D(-15, 17.5, math.pi / 2.0 + math.pi / 2.0 * 1.0))
 
-  for i in range(35):
-    path.append(Pose2D(-37, 17.5-i, math.pi * 3.0 / 2.0))
-  path.append(Pose2D(-37, -17.5, 0.0))
+  for i in range(22 * 4):
+    path.append(Pose2D(-15-i*0.25, 17.5, math.pi))
 
-  for i in range(61):
-    path.append(Pose2D(-37+i, -17.5, 0))
-  path.append(Pose2D(24, -17.5, math.pi / 2.0))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.1))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.2))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.3))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.4))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.5))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.6))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.7))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.8))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 0.9))
+  path.append(Pose2D(-37, 17.5, math.pi + math.pi / 2.0 * 1.0))
 
-  for i in range(35):
-    path.append(Pose2D(24, -17.5+i, math.pi / 2.0))
-  path.append(Pose2D(24, 17.5, math.pi))
+  for i in range(35 * 4):
+    path.append(Pose2D(-37, 17.5-i*0.25, math.pi * 3.0 / 2.0))
 
-  for i in range(20):
-    path.append(Pose2D(24-i, 17.5, math.pi))
-  path.append(Pose2D(4, 17.5, math.pi * 3.0 / 2.0))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.1))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.2))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.3))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.4))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.5))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.6))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.7))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.8))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 0.9))
+  path.append(Pose2D(-37, -17.5, math.pi * 3 / 2.0 + math.pi / 2.0 * 1.0))
 
-  for i in range(32):
-    path.append(Pose2D(4, 17.5-i, math.pi * 3.0 / 2.0))
-  path.append(Pose2D(4, -14.5, 0))
+  for i in range(61 * 4):
+    path.append(Pose2D(-37+i * 0.25, -17.5, 0))
 
-  for i in range(18):
-    path.append(Pose2D(4+i, -14.5, 0))
-  path.append(Pose2D(22, -14.5, math.pi / 2.0))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.1))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.2))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.3))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.4))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.5))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.6))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.7))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.8))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 0.9))
+  path.append(Pose2D(24, -17.5, math.pi / 2.0 * 1.0))
 
-  for i in range(31):
-    path.append(Pose2D(22, -14.5+i, math.pi / 2.0))  
-  path.append(Pose2D(22, 15.5, 0))
+  for i in range(35 * 4):
+    path.append(Pose2D(24, -17.5+i * 0.25, math.pi / 2.0))
 
-  for i in range(28):
-    path.append(Pose2D(22+i, 15.5, 0))  
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.1))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.2))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.3))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.4))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.5))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.6))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.7))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.8))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 0.9))
+  path.append(Pose2D(24, 17.5, math.pi / 2.0 + math.pi / 2.0 * 1.0))
+
+  for i in range(20 * 4):
+    path.append(Pose2D(24-i * 0.25, 17.5, math.pi))
+
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.1))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.2))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.3))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.4))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.5))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.6))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.7))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.8))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 0.9))
+  path.append(Pose2D(4, 17.5, math.pi + math.pi / 2.0 * 1.0))
+  
+  for i in range(32 * 4):
+    path.append(Pose2D(4, 17.5-i * 0.25, math.pi * 3.0 / 2.0))
+
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.1))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.2))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.3))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.4))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.5))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.6))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.7))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.8))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 0.9))
+  path.append(Pose2D(4, -14.5, math.pi * 3.0 / 2.0 + math.pi / 2.0 * 1.0))
+
+  for i in range(18 * 4):
+    path.append(Pose2D(4+i * 0.25, -14.5, 0))
+
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.1))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.2))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.3))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.4))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.5))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.6))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.7))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.8))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 0.9))
+  path.append(Pose2D(22, -14.5, math.pi / 2.0 * 1.0))
+
+  for i in range(30 * 4):
+    path.append(Pose2D(22, -14.5+i * 0.25, math.pi / 2.0))  
+
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.9))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.8))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.7))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.8))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.5))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.4))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.3))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.2))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.1))
+  path.append(Pose2D(22, 15.5, math.pi / 2.0 * 0.0))
+
+  for i in range(27 * 4):
+    path.append(Pose2D(22+i * 0.25, 15.5, 0))  
 
   for pose in path:
     GridMap2DDrawer.draw_point(map2d, pose.x, pose.y, 0.25, 1.0)

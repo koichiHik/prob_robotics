@@ -40,11 +40,11 @@ if __name__ == '__main__':
   
   print(__file__ + " Started!")
 
-  particle_num=10
+  particle_num=50
   
   # Error Config
   err_conf = MotionErrorModel2dConfigParams(
-          std_rot_per_rot=0.05, std_rot_per_trans=0.05,
+          std_rot_per_rot=0.01, std_rot_per_trans=0.01,
           std_trans_per_trans=0.01, std_trans_per_rot=0.01)
   err_model = MotionErrorModel2D(conf=err_conf)
 
@@ -65,11 +65,11 @@ if __name__ == '__main__':
   path = create_sample_robot_path(grid2d_odom_disp)
 
   # Lidar Property
-  lidar_config = VirtualLidar2DConfigParams(range_max=10.0, \
-                                   min_angle=-math.pi/2.0, \
-                                   max_angle=math.pi/2.0, \
+  lidar_config = VirtualLidar2DConfigParams(range_max=15.0, \
+                                   min_angle=-math.pi * 3.0 / 4.0, \
+                                   max_angle=math.pi * 3.0 / 4.0, \
                                    angle_res=math.pi/360.0, \
-                                   sigma=0.40)
+                                   sigma=0.05)
 
   # Inverse Sensor Model
   inv_lidar_conf = InverseRangeSensorModelConfigParams(\
@@ -106,12 +106,13 @@ if __name__ == '__main__':
                                    grid_map_conf=grid_conf_ogm, \
                                    inv_sens_model=inv_lidar_model)
 
-  fig_scanmap, ax_scanmap = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
-  fig_est_pose, ax_est_pose = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
-  fig, (ax00, ax10) = plt.subplots(nrows=2,ncols=1,figsize=(4, 6),dpi=100)
+  #fig_scanmap, ax_scanmap = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
+  #fig_est_pose, ax_est_pose = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
+  fig, (ax_est_pose, ax_scanmap) = plt.subplots(nrows=2,ncols=1,figsize=(10, 9),dpi=100)
+  #fig, (ax00, ax10) = plt.subplots(nrows=2,ncols=1,figsize=(4, 6),dpi=100)
 
-  grid2d_gt.show_heatmap(ax00)
-  grid2d_odom_disp.show_heatmap(ax10)
+  #grid2d_gt.show_heatmap(ax00)
+  #grid2d_odom_disp.show_heatmap(ax10)
 
   last_true_pose = path[0]
   cur_noised_pose = [last_true_pose]
@@ -146,7 +147,7 @@ if __name__ == '__main__':
     # Visualization.
     slam_map.show_heatmap(ax_scanmap)
     GridMap2DDrawer.draw_point(grid2d_pose, slam_pose.x, slam_pose.y, 0.2, 1.0)
-    GridMap2DDrawer.draw_point(grid2d_pose, cur_noised_pose[0].x, cur_noised_pose[0].y, 0.2, 1.0)
+    #GridMap2DDrawer.draw_point(grid2d_pose, cur_noised_pose[0].x, cur_noised_pose[0].y, 0.2, 1.0)
     grid2d_pose.show_heatmap(ax_est_pose)
     print(slam_pose.theta * 180.0 / math.pi)
 

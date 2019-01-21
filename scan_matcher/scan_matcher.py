@@ -58,9 +58,11 @@ class ScanMatcher(IScanMatcher):
     prob_array_rand = np.zeros(prob_array_hit.shape[0]) + 1 / self.__range_max \
                         * self.__scan_match_cfg._zrand
 
-    p = 1
+    p = 0
     for i in range(prob_array_hit.shape[0]):
-      p = p * (1.2 * prob_array_hit[i] + prob_array_max[i] + prob_array_rand[i])
+      pz = prob_array_hit[i] + prob_array_max[i] + prob_array_rand[i]
+      p = p + pz**10
+      #p = p * (prob_array_hit[i] + prob_array_max[i] + prob_array_rand[i])
 
     return p
 

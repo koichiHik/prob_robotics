@@ -101,12 +101,12 @@ if __name__ == "__main__":
                                       err_model=err_model, 
                                       scan_matcher=scan_matcher)
 
-  fig_scanmap, ax_scanmap = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
-  fig_est_pose, ax_est_pose = plt.subplots(nrows=1,ncols=1,figsize=(13, 9),dpi=100)
-  fig, (ax00, ax10) = plt.subplots(nrows=2,ncols=1,figsize=(4, 6),dpi=100)
+  #fig, (ax00, ax10) = plt.subplots(nrows=2,ncols=1,figsize=(8, 12),dpi=100)
+  fig, (ax_est_pose, ax_scanmap) = plt.subplots(nrows=2,ncols=1,figsize=(10, 9),dpi=100)
+  #fig, (ax00, ax10) = plt.subplots(nrows=2,ncols=1,figsize=(4, 6),dpi=100)
 
-  grid2d_gt.show_heatmap(ax00)
-  grid2d_odom_disp.show_heatmap(ax10)
+  #grid2d_gt.show_heatmap(ax00)
+  #grid2d_odom_disp.show_heatmap(ax10)
 
   last_true_pose = path[0]
   cur_noised_pose = [last_true_pose]
